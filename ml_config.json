@@ -1,13 +1,13 @@
 {
   "model_definition": "lstm_2",
   "checkpoint_epoch": 50,
-  "tensorboard_logs_dir": ".ml/logs",
-  "weights_dir": "./ml/weights",
+  "tensorboard_logs_dir": "ml/logs",
+  "weights_dir": "/ml/weights",
   "optimizer": "Adam",
   "learning_rate": 0.00005,
   "loss": "mean_squared_error",
   "batch_size": 64,
   "n_epochs": 500,
   "weights_to_validate": "epoch_500.hdf5",
-  "validation_plots_dir": "./ml/validation_plots"
+  "validation_plots_dir": "/ml/validation_plots"
 }
