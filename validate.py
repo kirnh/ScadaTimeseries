@@ -6,9 +6,15 @@ from utils.validation import *
 # ML configuration
 ml_config = json.load(open("ml_config.json"))
 model_name = ml_config["model_definition"]
+# Load model definition
+model = load_model_def(model_name)
+if ml_config["experiment_slug"]:
+    model_name += ml_config["experiment_slug"]
+# Load model weights
 weights_path = os.path.join(ml_config["weights_dir"], model_name, ml_config["weights_to_validate"])
+model.load_weights(weights_path)
 
-validation_plot_path = os.path.join(ml_config["validation_plots_dir"], ml_config["model_definition"])
+validation_plot_path = os.path.join(ml_config["validation_plots_dir"], model_name)
 if not os.path.exists(validation_plot_path):
     os.makedirs(validation_plot_path)
 validation_plot_path = validation_plot_path + "/validation_plot.png"
@@ -18,10 +24,6 @@ data_config = json.load(open("data_config.json"))
 data_stats = json.load(open(data_config["data_dir"] + "/data_stats.json"))
 val_output_path = os.path.join(data_config["data_dir"], "val_output.npy")
 val_features_path = os.path.join(data_config["data_dir"], "val_features.npy")
-
-# Load model definition and weights
-model = load_model_def(model_name)
-model.load_weights(weights_path)
 
 # Load validation data
 val_x, val_y = format_data(np.load(val_output_path), np.load(val_features_path), randomize=False)

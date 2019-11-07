@@ -1,11 +1,8 @@
-import json
-import numpy as np
 from utils.data import format_data
 from utils.ml import *
 from utils.callbacks import *
 import os
 from tensorflow.keras.callbacks import TensorBoard
-import importlib
 import tensorflow.keras.optimizers
 
 # Data configuration
@@ -24,10 +21,17 @@ test_features_path = os.path.join(data_dir, "test_features.npy")
 ml_config = json.load(open("ml_config.json"))
 model_name = ml_config["model_definition"]
 model = load_model_def(model_name)
+if ml_config["experiment_slug"]:
+    model_name += ml_config["experiment_slug"]
+
 weights_dir = ml_config["weights_dir"] + "/" + model_name
-os.makedirs(weights_dir)
+if not os.path.exists(weights_dir):
+    os.makedirs(weights_dir)
+
 tensorboard_logs_dir = ml_config["tensorboard_logs_dir"] + "/" + model_name
-os.makedirs(tensorboard_logs_dir)
+if not os.path.exists(tensorboard_logs_dir):
+    os.makedirs(tensorboard_logs_dir)
+
 optimizer = getattr(tensorflow.keras.optimizers, ml_config["optimizer"])
 optimizer = optimizer(learning_rate=ml_config["learning_rate"])
 

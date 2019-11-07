@@ -1,13 +1,14 @@
 {
-  "model_definition": "lstm_2",
+  "model_definition": "encoder-decoder",
   "checkpoint_epoch": 50,
   "tensorboard_logs_dir": "ml/logs",
   "weights_dir": "ml/weights",
   "optimizer": "Adam",
-  "learning_rate": 0.00005,
+  "learning_rate": 0.00001,
   "loss": "mean_squared_error",
   "batch_size": 64,
-  "n_epochs": 500,
-  "weights_to_validate": "epoch_500.hdf5",
-  "validation_plots_dir": "ml/validation_plots"
+  "n_epochs": 1000,
+  "weights_to_validate": "epoch_700.hdf5",
+  "validation_plots_dir": "ml/validation_plots",
+  "experiment_slug": "_IRR"
 }
