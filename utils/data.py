@@ -1,27 +1,32 @@
 import numpy as np
 import json
 
+data_config = json.load(open("data_config.json", "r"))
 
-def format_data(output_array, features_array, n_samples=None, timesteps_y=1, timesteps_x=96, randomize=True):
+
+def format_data(output_array, features_array, timesteps_y=data_config["output_timesteps"], timesteps_x=data_config["input_timesteps"], pad_output=False):
     x_list = []
     y_list = []
     n_points = len(output_array)
-    if not n_samples:
-        n_samples = n_points
-    for i in range(n_samples):
-        while True and randomize:
-            i = np.random.randint(0, n_points)
-            if i+timesteps_y+timesteps_x <= n_points:
-                break
+    for i in range(n_points):
         # Stop once we can't have a y array of length timesteps_y
         if i+timesteps_y+timesteps_x > n_points:
             break
         x = features_array[:, i: i+timesteps_x].transpose()
         y = output_array[i+timesteps_x: i+timesteps_x+timesteps_y]
+        if pad_output and timesteps_y < timesteps_x:
+            output = np.zeros(shape=timesteps_x)
+            output[0:timesteps_y] = y
+            timesteps_y = timesteps_x
+            y = output
         x_list.append(x)
         y_list.append(y)
     x_list, y_list = np.array(x_list), np.array(y_list)
-    return x_list.reshape((x_list.shape[0], timesteps_x, x_list.shape[2])), y_list.reshape((y_list.shape[0]))
+    if pad_output:
+        return x_list.reshape((x_list.shape[0], timesteps_x, x_list.shape[2])), y_list.reshape((y_list.shape[0], timesteps_y, 1))
+    else:
+        print(x_list.shape)
+        return x_list.reshape((x_list.shape[0], timesteps_x, x_list.shape[2])), y_list.reshape((y_list.shape[0], timesteps_y, y_list.shape[-1]))
 
 
 def rescale_features(features):

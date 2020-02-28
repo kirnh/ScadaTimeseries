@@ -1,12 +1,17 @@
 {
   "csv_dir": "/media/sensehawk/Backup Data/KiranHegde/SCADA/DATA/SCADA data/WMS datas/RSPL wms",
-  "data_dir": "/media/sensehawk/Backup Data/KiranHegde/SCADA/DATA/cleaned_data/WMS_RSPL_1",
-  "output_feature": "5162 RSPL - Total AC Power (Meter reading) (W)",
-  "input_features": ["5162 RSPL - IRR Daily (W/m²)"],
+  "data_dir": "/media/sensehawk/Backup Data/KiranHegde/SCADA/DATA/cleaned_data/WMS_RSPL_app/IRR_AT_H_W",
+  "output_feature": "5162 RSPL - IRR Daily (W/m²)",
+  "input_features": ["5162 RSPL - IRR Daily (W/m²)", "5162 RSPL - WIND_SPEED average (m/s)", "5162 RSPL - AMBIENT_TEMP average (°C)", "5162 RSPL - HUMIDITY average (%)"],
+  "feature_cleaning": {
+    "5162 RSPL - IRR Daily (W/m²)": {
+      "valid_time": [6, 18],
+      "invalid_time_value": 0
+    }
+  },
   "output_timesteps": 1,
   "input_timesteps": 96,
   "nan_replace": 0,
-  "train_test_val_split": [0.6, 0.2, 0.2],
-  "n_train_samples": 5000,
-  "n_test_samples": 1000
+  "train_test_val_split": [0.6, 0.2, 0.2]
 }
+

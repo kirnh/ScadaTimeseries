@@ -26,7 +26,8 @@ val_output_path = os.path.join(data_config["data_dir"], "val_output.npy")
 val_features_path = os.path.join(data_config["data_dir"], "val_features.npy")
 
 # Load validation data
-val_x, val_y = format_data(np.load(val_output_path), np.load(val_features_path), randomize=False)
+val_x, val_y = format_data(np.load(val_output_path), np.load(val_features_path))
+val_y = val_y.reshape((val_y.shape[0]))
 print("Validation x: ", val_x.shape)
 print("Validation y: ", val_y.shape)
 
@@ -36,20 +37,27 @@ for i in range(len(val_y)):
     val_x_i = val_x[i]
     val_x_i = val_x_i.reshape((1, val_x_i.shape[0], val_x_i.shape[1]))
     y_pred = model.predict(val_x_i)
-    val_y_pred.append(y_pred)
+    val_y_pred.append(y_pred[0][0][0])
 
-val_y_pred = np.array(val_y_pred)[:, 0, 0]
+# val_y_pred = np.array(val_y_pred)[:, 0, 0]
+val_y_pred = np.array(val_y_pred)
 val_y_pred[val_y_pred < 0] = 0
+val_y_pred[val_y_pred > 1] = 1
 val_y[val_y < 0] = 0
 
 # Plot features, predicted output and measured output
-val_features = np.load(val_features_path)
-arrays = list(val_features)
-array_labels = json.load(open("data_config.json"))["input_features"]
+arrays = []
+array_labels = []
+plot_features = False
+if plot_features:
+    val_features = np.load(val_features_path)[:, 96:]
+    print("Val features: ", val_features[0].shape)
+    arrays = list(val_features)
+    array_labels = json.load(open("data_config.json"))["input_features"]
 
 arrays += [val_y_pred, val_y]
 array_labels += ["Prediction", "Ground truth"]
 
 plot_graphs(arrays, array_labels, validation_plot_path)
-
+#
 

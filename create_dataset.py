@@ -13,7 +13,7 @@ def get_dataframe():
     for f in os.listdir(csv_dir):
         csv_filepath = os.path.join(csv_dir, f)
         new_data = df.from_csv(csv_filepath, encoding="ISO-8859-1", sep=';')
-        new_data.fillna(0)
+        new_data.fillna(data_config["nan_replace"])
         if not data_initialized:
             data = new_data
             data_initialized = True
@@ -22,13 +22,33 @@ def get_dataframe():
     return data.sort_index()
 
 
+def clean_feature(dataframe, feature_name, valid_time_period=None, invalid_time_value=0):
+    feature = dataframe[feature_name]
+    if valid_time_period:
+        times_list = [i.hour for i in feature.index.time]
+        invalid_times = [not(valid_time_period[1] > i > valid_time_period[0]) for i in times_list]
+        feature.loc[invalid_times] = invalid_time_value
+    dataframe[feature_name] = feature
+    return dataframe
+
+
 def split_and_save_data(dataframe, save_data_stats=True):
     data_dir = data_config["data_dir"]
     if not os.path.exists(data_dir):
         os.makedirs(data_dir)
     data_stats = {}
+    # Clean all features
+    feature_names = data_config["input_features"]
+    for feature_name in feature_names:
+        if feature_name not in data_config["feature_cleaning"]:
+            continue
+        clean_settings = data_config["feature_cleaning"][feature_name]
+        valid_time = clean_settings["valid_time"]
+        invalid_time_value = clean_settings["invalid_time_value"]
+        dataframe = clean_feature(dataframe, feature_name, valid_time_period=valid_time, invalid_time_value=invalid_time_value)
 
     output = dataframe[data_config["output_feature"]]
+
     o_max = output.max()
     o_min = output.min()
     o_mean = output.mean()
@@ -38,7 +58,6 @@ def split_and_save_data(dataframe, save_data_stats=True):
     output = minmax_scale(output)
     output[np.isnan(output)] = data_config["nan_replace"]
 
-    feature_names = data_config["input_features"]
     feature_stats = {}
     features = []
     for f in feature_names:

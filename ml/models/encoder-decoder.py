@@ -8,11 +8,8 @@ n_features = len(data_config["input_features"])
 
 # Model definition
 model = Sequential()
-model.add(LSTM(64, activation="relu", input_shape=(timesteps_x, n_features), return_sequences=True))
-model.add(LSTM(32, activation="relu"))
-# model.add(Dropout(0.5))
+model.add(LSTM(64, activation="relu", input_shape=(timesteps_x, n_features)))
 model.add(RepeatVector(1))
 model.add(LSTM(64, activation="relu", return_sequences=True))
-# model.add(Dropout(0.5))
 model.add(TimeDistributed(Dense(32)))
-model.add(TimeDistributed(Dense(1)))
+model.add(TimeDistributed(Dense(data_config["output_timesteps"])))
